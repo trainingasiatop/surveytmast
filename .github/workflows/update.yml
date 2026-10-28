@@ -1,0 +1,24 @@
+name: Update data survei
+on:
+  repository_dispatch:
+    types: [tm-survey]
+permissions:
+  contents: write
+concurrency:
+  group: tm-data
+  cancel-in-progress: false
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: node update.js
+      - name: Commit
+        run: |
+          git config user.name "tm-survey-bot"
+          git config user.email "tm-survey-bot@users.noreply.github.com"
+          git add data.json TM_Survey_Data.js
+          git diff --cached --quiet && exit 0
+          git commit -m "Update data survei"
+          git pull --rebase
+          git push
